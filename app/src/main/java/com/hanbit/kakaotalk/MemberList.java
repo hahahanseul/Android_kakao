@@ -126,7 +126,7 @@ public class MemberList extends AppCompatActivity {
             viewHolder.imageView.setImageResource(photos[i]);
             viewHolder.name.setText(list.get(i).getName());
             viewHolder.phone.setText(list.get(i).getPhone());
-            return null;
+            return v;
         }
     }
     static class ViewHolder{
