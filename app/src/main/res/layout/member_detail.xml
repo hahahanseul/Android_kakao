@@ -4,28 +4,33 @@
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <ImageView
+        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:src="@drawable/images"
         android:layout_gravity="center"/>
     <TextView
-        android:text="Name"
-        android:textSize="30dp"
+        android:id="@+id/name"
+        android:text=""
+        android:textSize="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <TextView
-        android:text="phone"
-        android:textSize="30dp"
+        android:id="@+id/phone"
+        android:text=""
+        android:textSize="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <TextView
-        android:text="email"
-        android:textSize="30dp"
+        android:id="@+id/email"
+        android:text=""
+        android:textSize="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <TextView
-        android:text="addr"
-        android:textSize="30dp"
+        android:id="@+id/addr"
+        android:text=""
+        android:textSize="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <Button
