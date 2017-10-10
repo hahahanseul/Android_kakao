@@ -47,12 +47,12 @@ public class Index extends AppCompatActivity {
 
             db.execSQL(sql);
 
-            for(int i=1;i<6;i++){
+ /*           for(int i=1;i<6;i++){
                 db.execSQL(String.format(" INSERT INTO %s(%s,%s,%s,%s,%s,%s)" +
                                 "VALUES ('%s','%s','%s','%s','%s','%s');"
                         ,Cons.MEM_TBL,Cons.PASS,Cons.NAME,Cons.EMAIL,Cons.PHONE,Cons.ADDR,Cons.PROFILEIMG,
                         "1","홍길동"+i,"hong"+i+"@test.com","010-1234-567"+i,"서울"+1,"default_img"));
-            }
+            }*/
         }
 
         @Override

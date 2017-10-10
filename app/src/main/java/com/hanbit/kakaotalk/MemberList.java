@@ -1,11 +1,15 @@
 package com.hanbit.kakaotalk;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +18,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -24,7 +29,7 @@ public class MemberList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.member_list);
         final Context context = MemberList.this;
-        ListView listView = (ListView) findViewById(R.id.listView);
+        final ListView listView = (ListView) findViewById(R.id.listView);
         final FriendList friendList = new FriendList(context);
         final ArrayList<Member>  friends = (ArrayList<Member>)new Service.IList() {
             @Override
@@ -35,8 +40,42 @@ public class MemberList extends AppCompatActivity {
         listView.setAdapter(new MemberAdapter(context,friends));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+            public void onItemClick(AdapterView<?> p, View v, int i, long l) {
+                Member m = (Member) listView.getItemAtPosition(i);
+                Toast.makeText(context,"선택된 아이디값"+ i,Toast.LENGTH_LONG).show();
+                Intent intent=new Intent(context,MemberDetail.class);
+                intent.putExtra("seq",m.getSeq());
+                startActivity(intent);
+            }
+        });
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> p, View v, int i, long l) {
+                final Member m = (Member) listView.getItemAtPosition(i);
+                new AlertDialog.Builder(context)
+                        .setTitle(m.getName() + "을 정녕 삭제하시겠습니까?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                final DeleteMember dm = new DeleteMember(context);
+                                new Service.IDelete() {
+                                    @Override
+                                    public void execute(Object o) {
+                                        Log.d("삭제할 id:" , m.getSeq());
+                                        dm.execute(m.getSeq());
+                                    }
+                                }.execute(null);
+                                startActivity(new Intent(context,MemberList.class));
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                startActivity(new Intent(context,MemberList.class));
+                            }
+                        })
+                        .show();
+                return true;
             }
         });
     }
@@ -52,10 +91,7 @@ public class MemberList extends AppCompatActivity {
         }
     }
     private class FriendList extends ListQuery{
-
-        public FriendList(Context context) {
-            super(context);
-        }
+        public FriendList(Context context) {super(context);}
         public ArrayList<Member> execute(){
             ArrayList<Member> list = new ArrayList<>();
             String  sql = String.format(" SELECT * FROM %s ;",
@@ -80,6 +116,26 @@ public class MemberList extends AppCompatActivity {
             return list;
         }
     }
+    private abstract class DeleteQuery extends Index.QueryFactory {
+        SQLiteOpenHelper helper;
+        public DeleteQuery(Context context) {
+            super(context);
+            helper = new Index.SqLiteHelper(context);
+        }
+        @Override
+        public SQLiteDatabase getDatabase() {
+            return helper.getWritableDatabase();
+        }
+    }
+    private class DeleteMember extends DeleteQuery {
+        public DeleteMember(Context context) {
+            super(context);
+        }
+        public void execute(String seq){
+            super.getDatabase().execSQL(String.format("DELETE FROM %s WHERE %s='%s';",Cons.MEM_TBL,Cons.SEQ,seq));
+        }
+    }
+
     class MemberAdapter extends BaseAdapter{
         ArrayList<Member> list;
         LayoutInflater inflater;
